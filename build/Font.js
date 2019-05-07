@@ -7,7 +7,11 @@ const isWeb = Platform.OS === 'web';
 const loaded = {};
 const loadPromises = {};
 export function processFontFamily(name) {
-    if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
+    if (
+        typeof name !== 'string' ||
+        Constants.systemFonts.includes(name) ||
+        name === 'System'
+    ) {
         return name;
     }
     if (name.includes(Constants.sessionId)) {
@@ -19,8 +23,7 @@ export function processFontFamily(name) {
                 console.error(`You started loading the font "${name}", but used it before it finished loading.\n
 - You need to wait for Font.loadAsync to complete before using the font.\n
 - We recommend loading all fonts before rendering the app, and rendering only Expo.AppLoading while waiting for loading to complete.`);
-            }
-            else {
+            } else {
                 console.error(`fontFamily "${name}" is not a system font and has not been loaded through Font.loadAsync.\n
 - If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.\n
 - If this is a custom font, be sure to load it with Font.loadAsync.`);
@@ -35,6 +38,9 @@ export function isLoaded(name) {
 }
 export function isLoading(name) {
     return loadPromises.hasOwnProperty(name);
+}
+export function addLoadedFont(name) {
+    loaded[name] = true;
 }
 export async function loadAsync(nameOrMap, source) {
     if (typeof nameOrMap === 'object') {
@@ -60,8 +66,7 @@ export async function loadAsync(nameOrMap, source) {
         try {
             await _loadSingleFontAsync(name, asset);
             loaded[name] = true;
-        }
-        finally {
+        } finally {
             delete loadPromises[name];
         }
     })();
@@ -71,7 +76,9 @@ function _getAssetForSource(source) {
     if (!isWeb && typeof source === 'string') {
         // TODO(nikki): need to implement Asset.fromUri(...)
         // asset = Asset.fromUri(uriOrModuleOrAsset);
-        throw new Error('Loading fonts from remote URIs is temporarily not supported. Please download the font file and load it using require. See: https://docs.expo.io/versions/latest/guides/using-custom-fonts.html#downloading-the-font');
+        throw new Error(
+            'Loading fonts from remote URIs is temporarily not supported. Please download the font file and load it using require. See: https://docs.expo.io/versions/latest/guides/using-custom-fonts.html#downloading-the-font'
+        );
     }
     if (isWeb || typeof source === 'number') {
         return Asset.fromModule(source);
@@ -96,7 +103,9 @@ let wasImportWarningShown = false;
 Object.defineProperty(exports, 'Font', {
     get() {
         if (!wasImportWarningShown) {
-            console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
+            console.warn(
+                `The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`
+            );
             wasImportWarningShown = true;
         }
         return {
@@ -105,6 +114,6 @@ Object.defineProperty(exports, 'Font', {
             isLoading,
             loadAsync,
         };
-    }
+    },
 });
 //# sourceMappingURL=Font.js.map
